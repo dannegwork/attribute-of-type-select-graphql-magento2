@@ -22,7 +22,9 @@ This integration has been developed on Magento 2.4.3
 If you wish to use this simple flow for customizing any Magento2 select attribute, please install the repository as is:
 
 `composer require dannegwork/attribute-of-type-select-graphql-magento2`
+
 `bin/magento module:enable DannegWork_CatalogGraphql`
+
 `bin/magento setup:upgrade`
 
 ### Sample GraphQL Request
