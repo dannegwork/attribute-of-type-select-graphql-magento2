@@ -18,7 +18,7 @@
   "autoload": {
     "files": ["registration.php"],
     "psr-4": {
-      "DannegWork\\OfTypeSelectGraphql\\": ""
+      "DannegWork\\CatalogGraphql\\": ""
     }
   }
 }

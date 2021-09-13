@@ -1,4 +1,4 @@
-# GRAPHQL plugin for Magento2
+# Catalog GRAPHQL plugin for Magento2
 
 This is a Magento2 plugin with the purpose of customizing the output for the select/dropdown Magento2 catalog attributes.
 

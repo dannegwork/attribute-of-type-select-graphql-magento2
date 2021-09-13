@@ -1,5 +1,5 @@
 <?php declare(strict_types=1);
-namespace DannegWork\OfTypeSelectGraphql\Model\Resolver\Product\Attribute;
+namespace DannegWork\CatalogGraphql\Model\Resolver\Product\Attribute;
 
 use Magento\Catalog\Model\Product;
 use Magento\Framework\Exception\LocalizedException;

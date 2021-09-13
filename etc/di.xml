@@ -9,7 +9,7 @@
     <virtualType name="Magento\Framework\GraphQlSchemaStitching\Reader" type="Magento\Framework\GraphQlSchemaStitching\Common\Reader">
         <arguments>
             <argument name="readers" xsi:type="array">
-                <item name="productAttributeOfTypeSelectReader" xsi:type="object">DannegWork\OfTypeSelectGraphql\Model\Config\AttributeOfTypeSelectReader</item>
+                <item name="productAttributeOfTypeSelectReader" xsi:type="object">DannegWork\CatalogGraphql\Model\Config\AttributeOfTypeSelectReader</item>
             </argument>
         </arguments>
     </virtualType>
@@ -17,7 +17,7 @@
 <!--    <type name="Magento\CatalogGraphQl\Model\Resolver\Products\DataProvider\Product\CompositeCollectionProcessor">-->
 <!--        <arguments>-->
 <!--            <argument name="collectionProcessors" xsi:type="array">-->
-<!--                <item name="attributesOfTypeSelect" xsi:type="object">DannegWork\OfTypeSelectGraphql\Model\Resolver\Products\DataProvider\Product\CollectionProcessor\AttributeOfTypeSelectProcessor</item>-->
+<!--                <item name="attributesOfTypeSelect" xsi:type="object">DannegWork\CatalogGraphql\Model\Resolver\Products\DataProvider\Product\CollectionProcessor\AttributeOfTypeSelectProcessor</item>-->
 <!--            </argument>-->
 <!--        </arguments>-->
 <!--    </type>-->

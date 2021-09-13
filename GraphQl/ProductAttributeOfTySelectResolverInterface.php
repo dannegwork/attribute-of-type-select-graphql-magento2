@@ -1,5 +1,5 @@
 <?php
-namespace DannegWork\OfTypeSelectGraphql\GraphQl;
+namespace DannegWork\CatalogGraphql\GraphQl;
 
 interface ProductAttributeOfTySelectResolverInterface
 {

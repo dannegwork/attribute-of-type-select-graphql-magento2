@@ -1,5 +1,5 @@
 <?php
-namespace DannegWork\OfTypeSelectGraphql\Model\Config;
+namespace DannegWork\CatalogGraphql\Model\Config;
 
 use Magento\Framework\Config\ReaderInterface;
 use Magento\Framework\GraphQl\Exception\GraphQlInputException;
@@ -29,11 +29,6 @@ class AttributeOfTypeSelectReader implements ReaderInterface
     private $collection;
 
     /**
-     * @var LoggerInterface
-     */
-    private $logger;
-
-    /**
      * @param MapperInterface $mapper
      * @param Collection $collection
      */
@@ -44,7 +39,6 @@ class AttributeOfTypeSelectReader implements ReaderInterface
     ) {
         $this->mapper = $mapper;
         $this->collection = $collection;
-        $this->logger = $logger;
     }
 
     /**
@@ -86,7 +80,7 @@ class AttributeOfTypeSelectReader implements ReaderInterface
      */
     protected function getLocatedTypeByAttributeCode(string $attributeCode) : string
     {
-        return \DannegWork\OfTypeSelectGraphql\GraphQl\ProductAttributeOfTySelectResolverInterface::RESOLVER_TYPE;
+        return \DannegWork\CatalogGraphql\GraphQl\ProductAttributeOfTySelectResolverInterface::RESOLVER_TYPE;
     }
 
 
