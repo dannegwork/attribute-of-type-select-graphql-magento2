@@ -15,6 +15,9 @@ In a clean Magento2 project, the GraphQL endpoint will display the numeric value
 "value":"<attribute-option-value>"
 }`
 
+### Exceptions
+The dropdown attributes which have a back-end model predefined (are of type "varchar") are not affected.
+
 ## Requirements
 This integration has been developed on Magento 2.4.3
 
