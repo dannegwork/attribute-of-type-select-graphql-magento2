@@ -1,0 +1,24 @@
+{
+  "name": "dannegwork/attribute-of-type-select-graphql-magento2",
+  "description": "GraphQL plugin that accesses custom attributes. To be used on Magento2.4.* setup",
+  "type": "magento2-module",
+  "homepage": "https://www.danneg.work",
+  "keywords": ["danneg","magento2","graphql"],
+  "support": {
+    "email": "contact@danneg.work"
+  },
+  "license": [
+    "OSL-3.0",
+    "AFL-3.0"
+  ],
+  "require": {
+    "php": ">=7.4",
+    "magento/framework": "*"
+  },
+  "autoload": {
+    "files": ["registration.php"],
+    "psr-4": {
+      "DannegWork\\OfTypeSelectGraphql\\": ""
+    }
+  }
+}
