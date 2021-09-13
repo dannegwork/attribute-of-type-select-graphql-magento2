@@ -39,6 +39,7 @@ class OfTypeSelect implements ResolverInterface
 
     /**
      * Format product's select attribute entry data to conform to GraphQL schema
+     * @TODO can be changed to a collectionprocessor element
      *
      * @inheritdoc
      */
@@ -48,24 +49,26 @@ class OfTypeSelect implements ResolverInterface
             throw new LocalizedException(__('"model" value should be specified'));
         }
 
-        $result = [];
-
         /** @var Product $product */
         $product = $value['model'];
         if($product->hasData($field->getName()))
         {
             /** @var StoreInterface $store */
             $store = $context->getExtensionAttributes()->getStore();
-            $this->entityAttributeCollection->setStoreId($store->getId());
+            $this->entityAttributeCollection->setStoreId((int)$store->getId());
 
-            $this->entityAttributeCollection->addAttributeOptionId((int)$product->getData($field->getName()));
-            $this->entityAttributeCollection->addAttributeCodeFilter((string)$field->getName());
-            $this->entityAttributeCollection->addIdFilters((int)$product->getId());
+            /** adding an attribute id filter can be redundant when the attribute is single-value */
+            $optionId = (int)$product->getData($field->getName());
+            $this->entityAttributeCollection->addOptionIdFilters($optionId);
 
-            $result = $this->entityAttributeCollection->getAttributeForEntityId($product->getId());
+            $result = function () use ($optionId) {
+                return $this->entityAttributeCollection->getSchemaForOptionId($optionId);
+            };
+
+            return $this->valueFactory->create($result);
         }
 
-        return $this->valueFactory->create($result);
+        return [];
     }
 
 

@@ -1,6 +1,7 @@
 <?php
 namespace DannegWork\CatalogGraphql\Model\Config;
 
+use DannegWork\CatalogGraphql\GraphQl\ProductAttributeOfTySelectResolverInterface;
 use Magento\Framework\Config\ReaderInterface;
 use Magento\Framework\GraphQl\Exception\GraphQlInputException;
 use Magento\Framework\GraphQl\Schema\Type\Entity\MapperInterface;
@@ -61,6 +62,7 @@ class AttributeOfTypeSelectReader implements ReaderInterface
                 foreach ($typeNames as $typeName) {
                     $config[$typeName]['fields'][$attribute->getAttributeCode()] = [
                         'name' => $attribute->getAttributeCode(),
+                        'resolver' => ProductAttributeOfTySelectResolverInterface::RESOLVER,
                         'type' =>  $this->getLocatedTypeByAttributeCode($attribute->getAttributeCode()),
                         'arguments' => []
                     ];
@@ -73,7 +75,8 @@ class AttributeOfTypeSelectReader implements ReaderInterface
 
 
     /**
-     * @todo can be extended by setting flags on attributes or in configuration (for which attribute codes to be updated)
+     * @TODO can be extended by setting flags on attributes or in configuration (for which attribute codes to be updated)
+     * (as seen on default M2 productDynamicAttributeReader)
      *
      * @param string $attributeCode
      * @return string

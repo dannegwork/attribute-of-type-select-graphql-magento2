@@ -1,6 +1,7 @@
 <?php declare(strict_types=1);
 namespace DannegWork\CatalogGraphql\Model\ResourceModel\Attribute\OfTypeSelect;
 
+use Magento\Catalog\Setup\CategorySetup;
 use \Magento\Framework\App\ResourceConnection;
 use Magento\Framework\DB\Select;
 use Psr\Log\LoggerInterface;
@@ -12,11 +13,6 @@ use Psr\Log\LoggerInterface;
  */
 class Collection
 {
-    /**
-     * @var int[]
-     */
-    protected $entityIds = [];
-
     /**
      * @var int[]
      */
@@ -38,16 +34,14 @@ class Collection
     protected $storeId = 0;
 
     /**
-     * Attribute code for the checked out attribute
-     *
      * @var string
      */
     protected $code;
 
     /**
-     * @var
+     * @var int
      */
-    protected $entityType = \Magento\Catalog\Model\Product::ENTITY;
+    protected $entityType = CategorySetup::CATALOG_PRODUCT_ENTITY_TYPE_ID;
 
     /**
      * @param ResourceConnection $resourceConnection
@@ -56,19 +50,6 @@ class Collection
         ResourceConnection $resourceConnection
     ) {
         $this->connection = $resourceConnection->getConnection();
-    }
-
-    /**
-     * Add entity and id filter to filter for fetch.
-     *
-     * @param int $entityId
-     * @return void
-     */
-    public function addIdFilters(int $entityId) : void
-    {
-        if (!in_array($entityId, $this->entityIds)) {
-            $this->entityIds[] = $entityId;
-        }
     }
 
     /**
@@ -93,19 +74,11 @@ class Collection
     }
 
     /**
-     * Retrieve attribute for passed in entity id.
-     *
-     * @param int $entityId
-     * @return array
+     * @param int $code
      */
-    public function getAttributeForEntityId(int $entityId) : array
+    public function addAttributeIdFilters(int $id) : void
     {
-        $optionValues = $this->fetch();
-        if (!isset($optionValues[$entityId])) {
-            return [];
-        }
-
-        return $optionValues[$entityId];
+        $this->attributeId = $id;
     }
 
     /**
@@ -116,7 +89,7 @@ class Collection
      */
     public function getSchemaForOptionId(int $optionId) : array
     {
-        $optionValues = $this->fetchForOptionId();
+        $optionValues = $this->fetch();
         if (!isset($optionValues[$optionId])) {
             return [];
         }
@@ -125,83 +98,13 @@ class Collection
     }
 
     /**
-     * Fetch attributes data and return in array format.
+     * Fetch attributes data and return in array format for a given option id
      *
      * @return array
      */
     protected function fetch() : array
     {
-        if (empty($this->entityIds) || !empty($this->optionValues)) {
-            return $this->optionValues;
-        }
-        $this->optionValues = $this->getAttributeValues();
-
-        return $this->optionValues;
-    }
-
-
-    /**
-     * Loading values per product
-     *
-     * @return array
-     */
-    protected function getAttributeValues() : array
-    {
-        $select = $this->connection->select()
-            ->from(
-                ['main'=> new \Zend_Db_Expr("( ". $this->getAttributeValueSql()->__toString() . " )")],
-                ['main.product_id', 'option.code', 'option.value']
-            )->joinLeft(
-                ['option' => new \Zend_Db_Expr("( ". $this->getOptionValuesSql()->__toString() . " )")],
-                "main.option_id = option.option_id AND option.attribute_id=main.attribute_id"
-            );
-
-        return $this->connection->fetchAssoc($select);
-    }
-
-    /**
-     * @param string $attributeId
-     * @return Select
-     */
-    protected function getAttributeValueSql(): Select
-    {
-        $attributeId = $this->getAttributeIdByAttributeCodeAndEntityType();
-        $select = $this->connection->select()
-            ->from(
-                ['c_p_e' => $this->connection->getTableName('catalog_product_entity')],
-                [
-                    'product_id' => 'c_p_e.entity_id',
-                    'attribute_id' => 'c_p_e_a.attribute_id',
-                    new \Zend_Db_Expr("CASE WHEN c_p_e_b.value IS NULL THEN c_p_e_a.value ELSE c_p_e_b.value END as option_id")
-                ]
-            )
-            ->joinLeft(
-                ['c_p_e_a' => $this->connection->getTableName('catalog_product_entity_int')],
-                'c_p_e_a.entity_id = c_p_e.entity_id AND c_p_e_a.store_id = 0 AND c_p_e_a.attribute_id = ' . $attributeId,
-                []
-            )
-            ->joinLeft(
-                ['c_p_e_b' => $this->connection->getTableName('catalog_product_entity_int')],
-                'c_p_e_b.entity_id = c_p_e.entity_id AND c_p_e_b.store_id = ' . $this->storeId . ' AND c_p_e_b.attribute_id = ' . $attributeId,
-                []
-            )
-            ->where('c_p_e.entity_id IN (?)', $this->entityIds);
-
-        return $select;
-    }
-
-    /**
-     * Fetch attributes data and return in array format for a given option id
-     *
-     * @return array
-     */
-    protected function fetchForOptionId() : array
-    {
-        if (empty($this->entityIds) || !empty($this->optionValues)) {
-            return $this->optionValues;
-        }
         $this->optionValues = $this->getAttributeOptionValues();
-
         return $this->optionValues;
     }
 
@@ -219,8 +122,7 @@ class Collection
             ->from(
                 ['option'=> new \Zend_Db_Expr("( ". $this->getOptionValuesSql()->__toString() . " )")],
                 ['option.option_id', 'option.code', 'option.value']
-            )->where('option.option_id IN (?)', $this->optionIds)
-            ->where('option.attribute_id = ?', $this->getAttributeIdByAttributeCodeAndEntityType());
+            )->where('option.option_id IN (?)', $this->optionIds);
 
         return $this->connection->fetchAssoc($select);
     }
@@ -257,22 +159,20 @@ class Collection
     /**
      * Helper function to access attribute ID by the attribute name
      *
-     * @param $code
-     * @param $type
-     * @return string
+     * @return int
      */
-    public function getAttributeIdByAttributeCodeAndEntityType() : string
+    public function getAttributeIdByAttributeCodeAndEntityType() : int
     {
         $whereConditions = [
             $this->connection->quoteInto('attr.attribute_code = ?', $this->code),
-            $this->connection->quoteInto('attr.entity_type_id = ?', $this->type)
+            $this->connection->quoteInto('attr.entity_type_id = ?', $this->entityType)
         ];
 
         $attributeIdSql = $this->connection->select()
             ->from(['attr'=>'eav_attribute'], ['attribute_id'])
             ->where(implode(' AND ', $whereConditions));
 
-        return $this->connection->fetchOne($attributeIdSql);
+        return (int) $this->connection->fetchOne($attributeIdSql);
     }
 
     /**

@@ -14,12 +14,5 @@
         </arguments>
     </virtualType>
 
-<!--    <type name="Magento\CatalogGraphQl\Model\Resolver\Products\DataProvider\Product\CompositeCollectionProcessor">-->
-<!--        <arguments>-->
-<!--            <argument name="collectionProcessors" xsi:type="array">-->
-<!--                <item name="attributesOfTypeSelect" xsi:type="object">DannegWork\CatalogGraphql\Model\Resolver\Products\DataProvider\Product\CollectionProcessor\AttributeOfTypeSelectProcessor</item>-->
-<!--            </argument>-->
-<!--        </arguments>-->
-<!--    </type>-->
 
 </config>

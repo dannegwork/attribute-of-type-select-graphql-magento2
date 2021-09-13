@@ -1,9 +1,9 @@
 ##
-# DannegWork_OfTypeSelectGraphql
+# DannegWork_CatalogGraphql
 # @author      Dana Negrescu <contact@danneg.work>
 ##
 
-type ProductAttributeOfTypeSelect  @doc(description: "Product info for a select attribute: code-value") @resolver(class: "DannegWork\\OfTypeSelectGraphql\\Model\\Resolver\\Product\\Attribute\\OfTypeSelect") {
+type ProductAttributeOfTypeSelect  @doc(description: "Product info for a select attribute: code-value") @resolver(class: "DannegWork\\CatalogGraphql\\Model\\Resolver\\Product\\Attribute\\OfTypeSelect") {
     code: String @doc(description: "Attribute option code (as set for admin).")
     value: String @doc(description: "Attribute option label (localized).")
 }
