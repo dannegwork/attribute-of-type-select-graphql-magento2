@@ -4,7 +4,6 @@ namespace DannegWork\CatalogGraphql\Model\ResourceModel\Attribute\OfTypeSelect;
 use Magento\Catalog\Setup\CategorySetup;
 use \Magento\Framework\App\ResourceConnection;
 use Magento\Framework\DB\Select;
-use Psr\Log\LoggerInterface;
 
 /**
  * Collection to fetch attribute data at resolution time.

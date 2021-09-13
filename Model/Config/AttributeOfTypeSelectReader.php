@@ -8,7 +8,6 @@ use Magento\Framework\GraphQl\Schema\Type\Entity\MapperInterface;
 use Magento\Framework\Reflection\TypeProcessor;
 use Magento\EavGraphQl\Model\Resolver\Query\Type;
 use Magento\CatalogGraphQl\Model\Resolver\Products\Attributes\Collection;
-use Psr\Log\LoggerInterface;
 
 /**
  * Update the type of the select/int product attributes
@@ -35,8 +34,7 @@ class AttributeOfTypeSelectReader implements ReaderInterface
      */
     public function __construct(
         MapperInterface $mapper,
-        Collection $collection,
-        LoggerInterface $logger
+        Collection $collection
     ) {
         $this->mapper = $mapper;
         $this->collection = $collection;
