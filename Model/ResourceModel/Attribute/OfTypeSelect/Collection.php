@@ -1,7 +1,6 @@
 <?php declare(strict_types=1);
 namespace DannegWork\CatalogGraphql\Model\ResourceModel\Attribute\OfTypeSelect;
 
-use Magento\Catalog\Setup\CategorySetup;
 use \Magento\Framework\App\ResourceConnection;
 use Magento\Framework\DB\Select;
 
@@ -33,14 +32,9 @@ class Collection
     protected $storeId = 0;
 
     /**
-     * @var string
+     * @var null | array
      */
-    protected $code;
-
-    /**
-     * @var int
-     */
-    protected $entityType = CategorySetup::CATALOG_PRODUCT_ENTITY_TYPE_ID;
+    protected $resolverTypeSchema = null;
 
     /**
      * @param ResourceConnection $resourceConnection
@@ -65,46 +59,29 @@ class Collection
     }
 
     /**
-     * @param string $code
-     */
-    public function addAttributeCodeFilters(string $code) : void
-    {
-        $this->code = $code;
-    }
-
-    /**
-     * @param int $code
-     */
-    public function addAttributeIdFilters(int $id) : void
-    {
-        $this->attributeId = $id;
-    }
-
-    /**
      * Retrieve attribute for passed in entity id.
      *
      * @param int $entityId
      * @return array
      */
-    public function getSchemaForOptionId(int $optionId) : array
+    public function getDataForOptionId(int $optionId) : array
     {
-        $optionValues = $this->fetch();
-        if (!isset($optionValues[$optionId])) {
+        $this->fetch();
+        if (!isset($this->optionValues[$optionId])) {
             return [];
         }
 
-        return $optionValues[$optionId];
+        return $this->optionValues[$optionId];
     }
 
     /**
      * Fetch attributes data and return in array format for a given option id
      *
-     * @return array
+     * @return void
      */
-    protected function fetch() : array
+    protected function fetch() : void
     {
         $this->optionValues = $this->getAttributeOptionValues();
-        return $this->optionValues;
     }
 
     /**
@@ -119,8 +96,8 @@ class Collection
     {
         $select = $this->connection->select()
             ->from(
-                ['option'=> new \Zend_Db_Expr("( ". $this->getOptionValuesSql()->__toString() . " )")],
-                ['option.option_id', 'option.code', 'option.value']
+                ['option' => new \Zend_Db_Expr("( ". $this->getOptionValuesSql()->__toString() . " )")],
+                array_merge(['option.option_id'], $this->getSchema())
             )->where('option.option_id IN (?)', $this->optionIds);
 
         return $this->connection->fetchAssoc($select);
@@ -156,25 +133,6 @@ class Collection
     }
 
     /**
-     * Helper function to access attribute ID by the attribute name
-     *
-     * @return int
-     */
-    public function getAttributeIdByAttributeCodeAndEntityType() : int
-    {
-        $whereConditions = [
-            $this->connection->quoteInto('attr.attribute_code = ?', $this->code),
-            $this->connection->quoteInto('attr.entity_type_id = ?', $this->entityType)
-        ];
-
-        $attributeIdSql = $this->connection->select()
-            ->from(['attr'=>'eav_attribute'], ['attribute_id'])
-            ->where(implode(' AND ', $whereConditions));
-
-        return (int) $this->connection->fetchOne($attributeIdSql);
-    }
-
-    /**
      * @param int $storeId
      * @return self
      */
@@ -184,15 +142,25 @@ class Collection
         return $this;
     }
 
+    /**
+     * @return string[]
+     */
+    public function getResolverTypeSchema() : array
+    {
+        if(is_null($this->resolverTypeSchema))
+        {
+            return ['code' => 'option.code', 'value' => 'option.value'];
+        }
+
+        return $this->resolverTypeSchema;
+    }
 
     /**
-     * @param string $type
-     * @return $this
+     * @param array $resolverTypeSchema
      */
-    public function setEntityType(string $type) : self
+    public function setResolverTypeSchema(array $resolverTypeSchema) : void
     {
-        $this->entityType = $type;
-        return $this;
+        $this->resolverTypeSchema = $resolverTypeSchema;
     }
 
 

@@ -62,7 +62,7 @@ class OfTypeSelect implements ResolverInterface
             $this->entityAttributeCollection->addOptionIdFilters($optionId);
 
             $result = function () use ($optionId) {
-                return $this->entityAttributeCollection->getSchemaForOptionId($optionId);
+                return $this->entityAttributeCollection->getDataForOptionId($optionId);
             };
 
             return $this->valueFactory->create($result);

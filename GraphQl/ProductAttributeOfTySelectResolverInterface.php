@@ -6,8 +6,8 @@ namespace DannegWork\CatalogGraphql\GraphQl;
  */
 interface ProductAttributeOfTySelectResolverInterface
 {
-    const RESOLVER_TYPE="ProductAttributeOfTypeSelect";
+    public const RESOLVER_TYPE="ProductAttributeOfTypeSelect";
 
-    const RESOLVER="DannegWork\\CatalogGraphql\\Model\\Resolver\\Product\\Attribute\\OfTypeSelect";
+    public const RESOLVER="DannegWork\\CatalogGraphql\\Model\\Resolver\\Product\\Attribute\\OfTypeSelect";
 
 }

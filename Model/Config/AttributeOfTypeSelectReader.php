@@ -1,12 +1,10 @@
 <?php
 namespace DannegWork\CatalogGraphql\Model\Config;
 
+use DannegWork\CatalogGraphql\GraphQl\ProductAttributeOfTySelectReaderInterface;
 use DannegWork\CatalogGraphql\GraphQl\ProductAttributeOfTySelectResolverInterface;
 use Magento\Framework\Config\ReaderInterface;
-use Magento\Framework\GraphQl\Exception\GraphQlInputException;
 use Magento\Framework\GraphQl\Schema\Type\Entity\MapperInterface;
-use Magento\Framework\Reflection\TypeProcessor;
-use Magento\EavGraphQl\Model\Resolver\Query\Type;
 use Magento\CatalogGraphQl\Model\Resolver\Products\Attributes\Collection;
 
 /**
@@ -15,7 +13,8 @@ use Magento\CatalogGraphQl\Model\Resolver\Products\Attributes\Collection;
  *
  * @author Dana Negrescu <contact@danneg.work>
  */
-class AttributeOfTypeSelectReader implements ReaderInterface
+class AttributeOfTypeSelectReader
+    implements ReaderInterface, ProductAttributeOfTySelectReaderInterface
 {
 
     /**
@@ -45,22 +44,23 @@ class AttributeOfTypeSelectReader implements ReaderInterface
      *
      * @param string|null $scope
      * @return array
-     * @throws GraphQlInputException
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function read($scope = null) : array
     {
         $config =[];
         $typeNames = $this->mapper->getMappedTypes(\Magento\Catalog\Model\Product::ENTITY);
+
         /** @var \Magento\Catalog\Model\ResourceModel\Eav\Attribute $attribute */
         foreach ($this->collection->getAttributes() as $attribute)
         {
             if($attribute->getFrontendInput() === "select" && $attribute->getBackendType() === "int")
             {
-                foreach ($typeNames as $typeName) {
+                foreach ($typeNames as $typeName)
+                {
                     $config[$typeName]['fields'][$attribute->getAttributeCode()] = [
                         'name' => $attribute->getAttributeCode(),
-                        'resolver' => ProductAttributeOfTySelectResolverInterface::RESOLVER,
+                        'resolver' => $this->getResolverByAttributeCode($attribute->getAttributeCode()),
                         'type' =>  $this->getLocatedTypeByAttributeCode($attribute->getAttributeCode()),
                         'arguments' => []
                     ];
@@ -79,9 +79,18 @@ class AttributeOfTypeSelectReader implements ReaderInterface
      * @param string $attributeCode
      * @return string
      */
-    protected function getLocatedTypeByAttributeCode(string $attributeCode) : string
+    public function getLocatedTypeByAttributeCode(string $attributeCode) : string
     {
-        return \DannegWork\CatalogGraphql\GraphQl\ProductAttributeOfTySelectResolverInterface::RESOLVER_TYPE;
+        return ProductAttributeOfTySelectResolverInterface::RESOLVER_TYPE;
+    }
+
+    /**
+     * @param string $attributeCode
+     * @return string
+     */
+    public function getResolverByAttributeCode(string $attributeCode): string
+    {
+        return ProductAttributeOfTySelectResolverInterface::RESOLVER;
     }
 
 
